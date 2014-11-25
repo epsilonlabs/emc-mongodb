@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.epsilon.common.dt.modelType">
+      <modelType
+            class="org.eclipse.epsilon.emc.mongodb.MongoModel"
+            dialog="org.eclipse.epsilon.emc.mongodb.dt.MongoModelConfigurationDialog"
+            icon="images/mongo.png"
+            label="Mongo DB"
+            stable="true"
+            type="Mongo">
+      </modelType>
+   </extension>
+
+</plugin>

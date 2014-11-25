@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.eclipse.epsilon.emc.mongodb.feature_0.5.0.201304110806.jar" id="org.eclipse.epsilon.emc.mongodb.feature" version="0.5.0.201304110806">
+      <category name="EpsilonLabs"/>
+   </feature>
+   <category-def name="EpsilonLabs" label="EpsilonLabs"/>
+</site>

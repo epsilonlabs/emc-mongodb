@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EMC Mongodb Driver
+Bundle-SymbolicName: org.eclipse.epsilon.emc.mongodb
+Bundle-Version: 0.5.0.qualifier
+Require-Bundle: org.eclipse.epsilon.eol.engine;visibility:=reexport,
+ org.eclipse.epsilon.emc.mongodb.dependencies;visibility:=reexport
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Export-Package: org.eclipse.epsilon.emc.mongodb
