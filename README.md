@@ -14,4 +14,4 @@ for (p in Post.all) {
 
 Update site
 -----------
-https://raw.githubusercontent.com/epsilonlabs/emc-mongodb/master/org.eclipse.epsilon.mongodb.updatesite/
+https://github.com/epsilonlabs/emc-mongodb/blob/master/org.eclipse.epsilon.emc.mongodb.updatesite/
