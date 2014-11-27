@@ -42,13 +42,16 @@ public class MongoModel extends DefaultModel implements IOperationContributorPro
 			EolNotInstantiableModelElementTypeException {
 		
 		DBObject dbObject = new BasicDBObject();
+		dbObject.put(DBOBJECT_ID, UUID.randomUUID().toString());
+		dbObject.put(COLLECTION_ID, type);
+		/*
 		if (type.startsWith("d_")) {
 			dbObject.put(COLLECTION_ID, type.substring(2));
 			db.getCollection(type.substring(2)).save(dbObject);
 		}
 		else {
 			dbObject.put(DBOBJECT_ID, UUID.randomUUID().toString());
-		}
+		}*/
 		return dbObject;
 		
 	}
@@ -72,14 +75,12 @@ public class MongoModel extends DefaultModel implements IOperationContributorPro
 	@Override
 	public Collection<?> getAllOfType(String type)
 			throws EolModelElementTypeNotFoundException {
-		if (type.startsWith("d_"))
-			return new MongoCollection(db.getCollection(type.substring(2)));
-		else return Collections.emptyList();
+		return new MongoCollection(db.getCollection(type));
 	}
 
 	@Override
 	public boolean hasType(String type) {
-		return type.startsWith("d_") || type.startsWith("e_");
+		return true;
 	}
 	
 	@Override
@@ -137,7 +138,7 @@ public class MongoModel extends DefaultModel implements IOperationContributorPro
 				DBObject dbObject = (DBObject) target;
 				db.getCollection(dbObject.get(COLLECTION_ID) + "").save(dbObject);
 			}
-						
+			
 		};
 	}
 	
