@@ -1,14 +1,27 @@
 Epsilon-MongoDB Integration
 ===========
 
-Eclipse plugins that extend Epsilon's Model Connectivity (EMC) layer with support for querying MongoDB databases using languages of the [Epsilon platform](http://www.eclipse.org/epsilon) to perform activities such as code generation, model validation and model-to-model transformation. The MongoDB EMC driver supports read-only access to locally-hosted MongoDB databases.
+Eclipse plugins that extend Epsilon's Model Connectivity (EMC) layer with support for querying MongoDB databases using languages of the [Epsilon platform](http://www.eclipse.org/epsilon) to perform activities such as code generation, model validation and model-to-model transformation. The MongoDB EMC driver supports read/write access to locally-hosted MongoDB databases.
 
 Example
 -----------
-The following EOL snippet demonstrates iterating through all the documents in a Post collection and printing the values of their title attribute.
+The following EOL snippet demonstrates creating Post and nested Comment documents in a MongoDB database.
 ```
-for (p in Post.all) {
-	p.title.println();
+DB.reset();
+
+for (i in 1.to(5)) {
+	var post : new DB!Post;
+	
+	post.title = "Post " + 1;
+	post.comments = new Sequence;
+
+	for (j in 1.to(5)) {
+		var comment : new DB!Comment;
+		comment.text = "Comment " + i + "" + j;
+		post.comments.add(comment);
+	}
+	
+	post.save();	
 }
 ```
 
