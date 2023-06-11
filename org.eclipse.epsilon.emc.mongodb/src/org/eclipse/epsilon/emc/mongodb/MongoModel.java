@@ -1,9 +1,13 @@
 package org.eclipse.epsilon.emc.mongodb;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.UUID;
+import static com.mongodb.client.model.Filters.eq;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelElementTypeNotFoundException;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
@@ -14,25 +18,27 @@ import org.eclipse.epsilon.eol.execute.operations.contributors.IOperationContrib
 import org.eclipse.epsilon.eol.execute.operations.contributors.OperationContributor;
 import org.eclipse.epsilon.eol.models.IRelativePathResolver;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.ReplaceOptions;
 
 public class MongoModel extends DefaultModel implements IOperationContributorProvider {
-	
+	public static final String PROPERTY_CONNECTION_STRING = "CONNECTION_STRING";
 	public static final String PROPERTY_DB = "DB";
+	
 	public static final String DBOBJECT_ID = "_id";
 	public static final String COLLECTION_ID = "_collectionName";
 	
-	protected DB db;
+	protected MongoDatabase db;
 	protected String databaseName;
 	protected MongoPropertyGetter propertyGetter = new MongoPropertyGetter();
 	protected MongoPropertySetter propertySetter = new MongoPropertySetter(this);
 	
 	public MongoModel() {}
 	
-	public MongoModel(DB db) {
+	public MongoModel(MongoDatabase db) {
 		this.db = db;
 	}
 	
@@ -41,8 +47,8 @@ public class MongoModel extends DefaultModel implements IOperationContributorPro
 			throws EolModelElementTypeNotFoundException,
 			EolNotInstantiableModelElementTypeException {
 		
-		DBObject dbObject = new BasicDBObject();
-		dbObject.put(DBOBJECT_ID, UUID.randomUUID().toString());
+		Document dbObject = new Document();
+		dbObject.put(DBOBJECT_ID, new ObjectId());
 		dbObject.put(COLLECTION_ID, type);
 		/*
 		if (type.startsWith("d_")) {
@@ -75,7 +81,15 @@ public class MongoModel extends DefaultModel implements IOperationContributorPro
 	@Override
 	public Collection<?> getAllOfType(String type)
 			throws EolModelElementTypeNotFoundException {
-		return new MongoCollection(db.getCollection(type));
+		FindIterable<Document> res = db.getCollection(type).find();
+		
+		// See https://stackoverflow.com/a/46663487
+		Collection<Document> collection = new ArrayList<Document>();
+		for (Document element : res) {
+			collection.add(element);
+		}
+
+		return collection;
 	}
 
 	@Override
@@ -89,39 +103,45 @@ public class MongoModel extends DefaultModel implements IOperationContributorPro
 	}
 
 	@Override
-	public void load(StringProperties properties, IRelativePathResolver resolver)
-			throws EolModelLoadingException {
+	public void load(StringProperties properties, IRelativePathResolver resolver) throws EolModelLoadingException {
 		super.load(properties, resolver);
+		String connectionString = properties.getProperty(MongoModel.PROPERTY_CONNECTION_STRING);
 		this.databaseName = properties.getProperty(MongoModel.PROPERTY_DB);
+		
 		try {
-			this.db = new Mongo().getDB(databaseName);
-		}
-		catch (Exception ex) {
+			if (connectionString.isBlank()) {
+				MongoClient mongoClient = MongoClients.create();
+				MongoDatabase db = mongoClient.getDatabase(databaseName);
+				this.db = db;
+			} else {
+				MongoClient mongoClient = MongoClients.create(connectionString);
+				MongoDatabase db = mongoClient.getDatabase(databaseName);
+				this.db = db;
+			}
+			
+		} catch (Exception ex) {
 			throw new EolModelLoadingException(ex, this);
 		}
 	}
-	
-	
+
 	public void reset() {
 		try {
-			this.db.dropDatabase();
-			this.db = new Mongo().getDB(databaseName);
-		}
-		catch (Exception ex) {
+			this.db.drop();
+		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 	}
-	
+
 	@Override
 	public boolean owns(Object o) {
-		return o instanceof DBObject;
+		return o instanceof Document;
 	}
 
-	public DB getDb() {
+	public MongoDatabase getDb() {
 		return db;
 	}
-	
-	public void setDb(DB db) {
+
+	public void setDb(MongoDatabase db) {
 		this.db = db;
 	}
 
@@ -131,12 +151,19 @@ public class MongoModel extends DefaultModel implements IOperationContributorPro
 			
 			@Override
 			public boolean contributesTo(Object target) {
-				return target instanceof DBObject;
+				return target instanceof Document;
 			}
 			
 			public void save() {
-				DBObject dbObject = (DBObject) target;
-				db.getCollection(dbObject.get(COLLECTION_ID) + "").save(dbObject);
+				Document doc = (Document) this.getTarget();
+				ObjectId id = (ObjectId) doc.get(DBOBJECT_ID);
+				String collectionName = doc.getString(COLLECTION_ID);
+				Bson withMatchingId = eq(DBOBJECT_ID, id);
+				
+				ReplaceOptions createObjectIfDoesntExists = new ReplaceOptions().upsert(true);
+				
+				db.getCollection(collectionName)
+				  .replaceOne(withMatchingId, doc, createObjectIfDoesntExists);
 			}
 			
 		};
