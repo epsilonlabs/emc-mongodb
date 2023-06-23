@@ -18,7 +18,7 @@ public class DefaultModel extends Model {
 	}
 
 	@Override
-	public Object createInstance(String arg0)
+	public Object createInstance(String type)
 			throws EolModelElementTypeNotFoundException,
 			EolNotInstantiableModelElementTypeException {
 		// TODO Auto-generated method stub
@@ -26,70 +26,70 @@ public class DefaultModel extends Model {
 	}
 
 	@Override
-	public void deleteElement(Object arg0) throws EolRuntimeException {
+	public void deleteElement(Object instance) throws EolRuntimeException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public Collection<?> getAllOfKind(String arg0)
+	public Collection<?> getAllOfKind(String kind)
 			throws EolModelElementTypeNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<?> getAllOfType(String arg0)
+	public Collection<?> getAllOfType(String type)
 			throws EolModelElementTypeNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Object getElementById(String arg0) {
+	public Object getElementById(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getElementId(Object arg0) {
+	public String getElementId(Object instance) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Object getEnumerationValue(String arg0, String arg1)
+	public Object getEnumerationValue(String enumeration, String label)
 			throws EolEnumerationValueNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getTypeNameOf(Object arg0) {
+	public String getTypeNameOf(Object instance) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Object getTypeOf(Object arg0) {
+	public Object getTypeOf(Object instance) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public boolean hasType(String arg0) {
+	public boolean hasType(String type) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean isInstantiable(String arg0) {
+	public boolean isInstantiable(String type) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean isModelElement(Object arg0) {
+	public boolean isModelElement(Object instance) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -101,15 +101,14 @@ public class DefaultModel extends Model {
 	}
 
 	@Override
-	public boolean owns(Object arg0) {
+	public boolean owns(Object instance) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void setElementId(Object arg0, String arg1) {
+	public void setElementId(Object instance, String newId) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -119,9 +118,8 @@ public class DefaultModel extends Model {
 	}
 
 	@Override
-	public boolean store(String arg0) {
+	public boolean store(String location) {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
 }

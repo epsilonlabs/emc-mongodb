@@ -28,8 +28,11 @@ public class MongoModelConfigurationDialog extends AbstractModelConfigurationDia
 		return "Mongo";
 	}
 	
-	protected Label fileTextLabel;
-	protected Text fileText;	
+	protected Label connectionStringTextLabel;
+	protected Text connectionStringText;	
+	
+	protected Label databaseTextLabel;
+	protected Text databaseText;	
 	
 	protected void createGroups(Composite control) {
 		super.createGroups(control);
@@ -37,14 +40,20 @@ public class MongoModelConfigurationDialog extends AbstractModelConfigurationDia
 	}
 	
 	protected Composite createFilesGroup(Composite parent) {
-		final Composite groupContent = createGroupContainer(parent, "Database", 2);
+		final Composite groupContent = createGroupContainer(parent, "Authentication", 2);
 				
+		connectionStringTextLabel = new Label(groupContent, SWT.NONE);
+		connectionStringTextLabel.setText("Connection string: ");
 		
-		fileTextLabel = new Label(groupContent, SWT.NONE);
-		fileTextLabel.setText("Database: ");
+		connectionStringText = new Text(groupContent, SWT.BORDER);
+		connectionStringText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		connectionStringText.setToolTipText("empty or mongodb://localhost:27017/");
 		
-		fileText = new Text(groupContent, SWT.BORDER);
-		fileText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		databaseTextLabel = new Label(groupContent, SWT.NONE);
+		databaseTextLabel.setText("Database name: ");
+		
+		databaseText = new Text(groupContent, SWT.BORDER);
+		databaseText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 				
 		groupContent.layout();
 		groupContent.pack();
@@ -54,12 +63,14 @@ public class MongoModelConfigurationDialog extends AbstractModelConfigurationDia
 	protected void loadProperties(){
 		super.loadProperties();
 		if (properties == null) return;
-		fileText.setText(properties.getProperty(MongoModel.PROPERTY_DB));
+		connectionStringText.setText(properties.getProperty(MongoModel.PROPERTY_CONNECTION_STRING));
+		databaseText.setText(properties.getProperty(MongoModel.PROPERTY_DB));
 	}
 	
 	
 	protected void storeProperties(){
 		super.storeProperties();
-		properties.put(MongoModel.PROPERTY_DB, fileText.getText());
+		properties.put(MongoModel.PROPERTY_CONNECTION_STRING, connectionStringText.getText());
+		properties.put(MongoModel.PROPERTY_DB, databaseText.getText());
 	}
 }

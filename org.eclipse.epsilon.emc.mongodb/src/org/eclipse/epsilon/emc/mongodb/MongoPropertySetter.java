@@ -1,9 +1,9 @@
 package org.eclipse.epsilon.emc.mongodb;
 
+import org.bson.Document;
 import org.eclipse.epsilon.eol.exceptions.EolRuntimeException;
+import org.eclipse.epsilon.eol.execute.context.IEolContext;
 import org.eclipse.epsilon.eol.execute.introspection.AbstractPropertySetter;
-
-import com.mongodb.DBObject;
 
 public class MongoPropertySetter extends AbstractPropertySetter {
 
@@ -14,9 +14,13 @@ public class MongoPropertySetter extends AbstractPropertySetter {
 	}
 	
 	@Override
-	public void invoke(Object value) throws EolRuntimeException {
-		DBObject dbObject = (DBObject) object;
-		dbObject.put(property, value);
+	public void invoke(Object target, String property, Object value, IEolContext context) throws EolRuntimeException {
+		if (!(target instanceof Document)) {
+			throw new EolRuntimeException("The target must be a BSON Document");
+		}
+		
+		Document object = (Document) target;
+		object.put(property, value);
+		
 	}
-	
 }
